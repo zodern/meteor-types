@@ -2,7 +2,7 @@ Package.describe({
   name: "zodern:types",
   summary: "Type definitions for Meteor packages",
   documentation: "./README.md",
-  version: '1.0.6',
+  version: '1.0.7',
   git: 'https://github.com/zodern/meteor-types.git'
 });
 
