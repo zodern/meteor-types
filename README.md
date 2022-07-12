@@ -39,8 +39,8 @@ meteor add zodern:types
 
 1. If the package is a local package, and only has a single ts file used as the main module, it uses this file
 2. If the package uses `zodern:types`:
-  1. If a local package, the path from the `typesEntry` option in the package's `package-types.json` file is used
-  2. Otherwise, uses the types that were generated when the package was published
+   1. If a local package, the path from the `typesEntry` option in the package's `package-types.json` file is used
+   2. Otherwise, uses the types that were generated when the package was published
 3. If the package has a single `.d.ts` file, this file is used
 4. If the package has a single file used as the main module, a file with the same name and the `.d.ts` extension is used. If the file is in a `src` folder, it will also check in a `lib` folder for the `.d.ts` file.
 
