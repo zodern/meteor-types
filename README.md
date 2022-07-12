@@ -57,7 +57,7 @@ Requires Meteor 2.3 or newer when running `meteor publish`. Outside of publishin
 
 When publishing your package, it handles:
 - Ensuring Meteor includes any `.d.ts` and `package-types.json` files
-- Types are generated
+- Generate .d.ts files
 - Uninstall any npm dev dependencies, and re-install them after the package is published
 
 In the future, it will also allow typescript to find the types of any of your package's dependencies, similar to what it does for Meteor apps.
@@ -82,3 +82,5 @@ Package.onUse(function (api) {
 While Meteor allows you to have separate main modules for each arch, Typescript only supports having a single set of types for the package. `typesEntry` should be the path to a ts file that exports the api and types that code using the package should have available. This could be the package's main module, or another ts file.
 
 In development, typescript will use the ts file directly for the package's types. This way, the types will be automatically updated whenever Meteor rebuilds the package. When publishing, `zodern:types` will have typescript create `.d.ts` files.
+
+Alternatively, `typesEntry` can point to a `.d.ts` file. In this case, that file will be used as is in both development and when publishing, and `zodern:types` won't generate any types when publishing. This is useful if your package isn't written in typescript (for example, your package supports older versions of Meteor that don't have the typescript package) and you manually create the `.d.ts` file, or you have a custom process for generating the type definitions.
