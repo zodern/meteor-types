@@ -52,7 +52,7 @@ PackageSource.prototype._findSources = function (options) {
 
     // If _findSources is called for a linter, then _allowConflicts will be true
     // and we can't call getByFilename
-    sourceProcessorSet._allowConflicts &&
+    !sourceProcessorSet._allowConflicts &&
     sourceProcessorSet.getByFilename &&
     sourceProcessorSet.getByFilename('package-types.json')
   ) {
