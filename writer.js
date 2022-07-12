@@ -139,16 +139,11 @@ module.exports = class Writer {
   }
 
   generateDeclaration() {
-    let corePackages = new Set(this.findCorePackagesWithTypes());
-
     let content = '';
-
-    let added = new Set();
 
     for (const entry of this.packages.entries()) {
       let name = entry[0];
       let typesPath = entry[1].typesPath;
-      added.add(name);
       let standardName = name.replace('_', ':');
       // When typescript resolves the file, it assumes the path doesn't
       // have the extension.
@@ -160,46 +155,7 @@ declare module 'meteor/${standardName}' {
 `;
     }
 
-    corePackages.forEach(name => {
-      if (added.has(name)) {
-        // In case a core package has its own types, we don't want to add
-        // two declarations
-        return;
-      }
-
-      content += `
-declare module 'meteor/${name}' {
-  export * from 'meteor/${name}';
-}
-`
-    });
-
     return content;
-  }
-
-  findCorePackagesWithTypes() {
-    let corePackagesWithTypes = [];
-    let meteorTypesPath = path.resolve(
-      this.appPath,
-      'node_modules/@types/meteor'
-    );
-
-    if (!fs.existsSync(meteorTypesPath)) {
-      return [];
-    }
-
-    fs.readdirSync(meteorTypesPath, { withFileTypes: true })
-      .forEach(dirent => {
-        if (
-          dirent.isFile() &&
-          dirent.name.endsWith('.d.ts') &&
-          dirent.name !== 'index.d.ts'
-        ) {
-          corePackagesWithTypes.push(dirent.name.replace('.d.ts', ''))
-        }
-      });
-
-      return corePackagesWithTypes;
   }
 
   findNodeModulesPath(packagePath) {

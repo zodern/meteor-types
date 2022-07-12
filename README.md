@@ -22,6 +22,7 @@ meteor add zodern:types
   "compilerOptions": {
     "paths": {
       "meteor/*": [
+        "node_modules/@types/meteor/*",
         ".meteor/local/types/packages.d.ts"
       ]
     }
