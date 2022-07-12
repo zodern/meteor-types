@@ -126,6 +126,8 @@ function generateTypes(packageDir, typesEntryPath) {
     '--declarationDir',
     typesPath,
     '--declarationMap',
+    '--rootDir',
+    './'
   ]
 
   console.log('[zodern:types] => Generating package type declaration files');
