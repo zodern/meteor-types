@@ -105,7 +105,7 @@ function findPackagePath(appPath, name, version, catalog) {
 
   // Check if local package
   let localPath = path.resolve(appPath, '.meteor/local/isopacks', name.replace(':', '_'));
-  if (exists(localPath)) {
+  if (checkLocal && exists(localPath)) {
     return { packagePath: localPath, remote: false };
   }
 
