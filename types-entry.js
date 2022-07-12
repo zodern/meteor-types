@@ -3,7 +3,11 @@ import fs from 'fs';
 import log from './log';
 
 export function findTypesEntry(packagePath, isopack, remote) {
-  const { mainModules, definitionFiles, packageTypesConfig } = analyzeResources(isopack);
+  const {
+    mainModules,
+    definitionFiles,
+    packageTypesConfigs
+  } = analyzeResources(isopack, remote);
 
   log('examining', packagePath);
 
@@ -21,13 +25,13 @@ export function findTypesEntry(packagePath, isopack, remote) {
 
   }
 
-  if (packageTypesConfig.length > 0) {
-    let configResource = packageTypesConfig[0];
+  if (packageTypesConfigs.length > 0) {
+    let configResource = packageTypesConfigs[0];
     let config = readTypesConfig(packagePath, configResource);
     log('read config', config);
     if (
       config.typesEntry &&
-        fs.existsSync(config.typesEntry)
+      fs.existsSync(config.typesEntry)
     ) {
       log('can use types entry');
       let relative = path.relative(packagePath, config.typesEntry);
@@ -77,10 +81,11 @@ function getFirstValue(map) {
   return map.values().next().value;
 }
 
-function analyzeResources(isopack) {
+function analyzeResources(isopack, remote) {
   let mainModules = new Map();
   let definitionFiles = new Map();
-  let packageTypesConfig = new Map();
+  let rootPackageTypes = null;
+  let generatedPackageTypes = null;
 
   for (const unibuild of isopack.unibuilds) {
     for (const resource of unibuild.resources) {
@@ -92,14 +97,19 @@ function analyzeResources(isopack) {
         definitionFiles.set(resource.hash, resource);
       }
 
-      if (
-        resource.path === 'package-types.json' ||
-        resource.path === '.types/package-types.json'
-      ) {
-        packageTypesConfig.set(resource.path, resource);
+      if (resource.path === 'package-types.json') {
+        rootPackageTypes = resource;
+      }
+
+      if (resource.path === '__types/package-types.json') {
+        generatedPackageTypes = resource;
       }
     }
   }
+
+  let packageTypesConfigs = remote ?
+    [generatedPackageTypes, rootPackageTypes] :
+    [rootPackageTypes, generatedPackageTypes];
 
   return {
     mainModules,
@@ -107,9 +117,7 @@ function analyzeResources(isopack) {
     // Sort in order of priority
     // .types/package-types.json overrides package-types.json
     // TODO: verify this works
-    packageTypesConfig: [...packageTypesConfig.values()].sort((a, b) => {
-      return a.path.length - b.path.length;
-    })
+    packageTypesConfigs: packageTypesConfigs.filter(c => c)
   };
 }
 

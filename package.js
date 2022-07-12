@@ -1,11 +1,12 @@
 Package.describe({
   summary: "Type definitions for Meteor packages",
-  name: "zodern:types"
+  name: "zodern:types",
+  version: '1.0.0'
 });
 
 Package.registerBuildPlugin({
   name: 'types',
-  sources: [ 'types.js', 'release-packages.js' ],
+  sources: [ 'types.js', 'publish-packages.js' ],
   use: [
     'ecmascript'
   ]

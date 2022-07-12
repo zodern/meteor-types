@@ -1,6 +1,8 @@
 ## zodern:types
 
-Tooling to use Typescript types from Meteor packages in your apps
+Tooling to use Typescript types from Meteor packages in your apps.
+
+Supports Meteor 2.3 and newer
 
 ### Meteor Apps
 
@@ -74,4 +76,4 @@ Package.onUse(function (api) {
 
 While Meteor allows you to have separate main modules for each arch, Typescript only supports having a single set of types for the package. `typesEntry` should be the path to a ts file that exports the api and types that code using the package should have available. This could be the package's main module, or another ts file.
 
-In development, typescript will use the ts file directly for the package's types. This way, the types will be automatically updated whenever Meteor rebuilds the package. When publishing, `zodern:types` will have typescript create `.d.ts`.
+In development, typescript will use the ts file directly for the package's types. This way, the types will be automatically updated whenever Meteor rebuilds the package. When publishing, `zodern:types` will have typescript create `.d.ts` files.
