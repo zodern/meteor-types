@@ -8,9 +8,9 @@ let meteorParentDir = process.platform === 'win32' ?
   process.env.LOCALAPPDATA :
   process.env.HOME;
 
-let catalogPath = path.join(meteorParentDir, '.meteor', 'packages');
+let remoteCatalogPath = path.join(meteorParentDir, '.meteor', 'packages');
 
-module.exports = function loadPackages(appPath) {
+module.exports = function loadPackages(appPath, catalog) {
   var contents;
   try {
     contents = fs.readFileSync(path.resolve(appPath, '.meteor/versions'), 'utf-8');
@@ -38,7 +38,7 @@ module.exports = function loadPackages(appPath) {
     if (packageVersion.package in packages)
       return;
 
-    var result = findPackagePath(appPath, packageVersion.package, packageVersion.version);
+    var result = findPackagePath(appPath, packageVersion.package, packageVersion.version, catalog);
     packages[packageVersion.package] = {
       remote: result.remote,
       version: packageVersion.version,
@@ -88,7 +88,20 @@ function readIsopack(packagePath) {
   return config;
 }
 
-function findPackagePath(appPath, name, version) {
+function findPackagePath(appPath, name, version, catalog) {
+  let checkLocal = true;
+  
+  if (catalog) {
+    let entry = catalog.getVersion(name, version);
+    log('Catalog result:', name, version, `entry: ${!!entry}`, `published: ${entry && entry.published}`);
+    if (entry && entry.published) {
+      // We know the package is not local
+      // Checking the local isopacks could lead to incorrect results since
+      // Meteor doesn't remove isopacks if a package was local, then becomes remote
+      checkLocal = false;
+    }
+  }
+
   // Check if local package
   let localPath = path.resolve(appPath, '.meteor/local/isopacks', name.replace(':', '_'));
   if (exists(localPath)) {
@@ -96,7 +109,7 @@ function findPackagePath(appPath, name, version) {
   }
 
   let remotePath = path.join(
-    catalogPath,
+    remoteCatalogPath,
     name.replace(':', '_'),
     version
   );

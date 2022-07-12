@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const spawnSync = require('child_process').spawnSync;
+const PackageSource = require('./tools-imports.js').PackageSource;
 
 // During publishing packages, this handles:
 //
@@ -31,13 +32,6 @@ const isPublish = process.argv.includes('publish');
 const packagePath = process.cwd();
 let prepared = false;
 
-const mainModule = global.process.mainModule;
-const absPath = mainModule.filename.split(path.sep).slice(0, -1).join(path.sep);
-const toolsRequire = function (filePath) {
-  return mainModule.require(path.resolve(absPath, filePath));
-};
-
-const PackageSource = toolsRequire('isobuild/package-source');
 const originalFindSources = PackageSource.prototype._findSources;
 
 PackageSource.prototype._findSources = function (options) {
