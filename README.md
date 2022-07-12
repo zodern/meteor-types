@@ -2,7 +2,6 @@
 
 Tooling to use Typescript types from Meteor packages in your apps.
 
-
 ### Meteor Apps
 
 For Meteor apps, `zodern:types` allows typescript to find the types from Meteor packages.
@@ -50,7 +49,7 @@ meteor add zodern:types
 
 For Meteor packages, `zodern:types` makes it easier to publish a package with types.
 
-Requires Meteor 2.3 or newer when running `meteor publish`. Outside of publishing, it shouldn't have any restrictions on the Meteor versions you can run or test your package with.
+Requires Meteor 2.3 or newer when running `meteor publish`. Outside of publishing (using in an app or running package tests), it is compatible with Meteor 1.4 and newer.
 
 When publishing your package, it handles:
 - Ensuring Meteor includes any `.d.ts` and `package-types.json` files
