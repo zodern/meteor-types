@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const log = require('./log');
 
 // TODO: add support for running Meteor from checkout
 let meteorParentDir = process.platform === 'win32' ?
