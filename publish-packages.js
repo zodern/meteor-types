@@ -77,6 +77,41 @@ function preparePackageForPublish(packageDir) {
     config.typesEntry
   );
 
+  if (typesEntryPath.endsWith('.d.ts')) {
+    console.log('[zodern:types] => Skipping types generation since typesEntry points to a .d.ts file');
+    if (!fs.existsSync(typesEntryPath)) {
+      throw `typesEntry file does not exit: ${typesEntryPath}`;
+    }
+  } else {
+    generateTypes(packageDir, typesEntryPath);
+  }
+
+  // Remove dev npm dependencies
+  console.log('[zodern:types] => Uninstalling package\'s dev dependencies');
+
+  let npmResult = spawnSync('npm', ['prune', '--production'], {
+    cwd: packageDir,
+    stdio: 'inherit'
+  });
+
+  if (npmResult.status > 0) {
+    throw new Error('Failed uninstalling production npm deps');
+  }
+
+  process.on('exit', () => {
+    console.log('[zodern:types] => Re-installing package\'s dev dependencies');
+    const env = JSON.parse(JSON.stringify(process.env));
+    env.NODE_ENV = 'development';
+
+    spawnSync('npm', ['install'], {
+      cwd: packageDir,
+      stdio: 'inherit',
+      env: env
+    });
+  });
+}
+
+function generateTypes(packageDir, typesEntryPath) {
   console.log('[zodern:types] => Cleaning old generated types');
   const typesPath = path.resolve(packageDir, '__types');
 
@@ -123,28 +158,4 @@ function preparePackageForPublish(packageDir) {
     '*',
     'utf-8'
   );
-
-  // Remove dev npm dependencies
-  console.log('[zodern:types] => Uninstalling package\'s dev dependencies');
-
-  let npmResult = spawnSync('npm', ['prune', '--production'], {
-    cwd: packageDir,
-    stdio: 'inherit'
-  });
-
-  if (npmResult.status > 0) {
-    throw new Error('Failed uninstalling production npm deps');
-  }
-
-  process.on('exit', () => {
-    console.log('[zodern:types] => Re-installing package\'s dev dependencies');
-    const env = JSON.parse(JSON.stringify(process.env));
-    env.NODE_ENV = 'development';
-
-    spawnSync('npm', ['install'], {
-      cwd: packageDir,
-      stdio: 'inherit',
-      env: env
-    });
-  });
 }
