@@ -15,7 +15,7 @@ Plugin.registerCompiler({
   // These aren't used by the compiler
   // This ensures meteor includes these files when building or publishing
   // the package
-  extensions: ['d.ts'],
+  extensions: ['d.ts', 'd.ts.map'],
   filenames: ['package-types.json']
 }, () => new PackageCompiler());
 
