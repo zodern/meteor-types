@@ -90,7 +90,7 @@ function analyzeResources(isopack, remote) {
 
   for (const unibuild of isopack.unibuilds) {
     for (const resource of unibuild.resources) {
-      if (resource.fileOptions.mainModule) {
+      if (resource.fileOptions && resource.fileOptions.mainModule) {
         mainModules.set(resource.path, resource);
       }
 
