@@ -31,6 +31,9 @@ meteor add zodern:types
 ```
 
 `zodern:types` stores the type definitions from packages in your app's `.meteor/local/types` folder.
+If your tsconfig has `exclude` configured, make sure the exclude rules do not exclude `.meteor/local/types`.
+
+3) Generate types
 
 `zodern:types` is implemented as a Meteor linter plugin. The type definitions are updated whenever your app is built. You can also update the types directly by running `meteor lint`.
 
