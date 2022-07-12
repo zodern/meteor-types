@@ -1,9 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-import log from './log';
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const log = require('./log.js');
 
 // Manages the files and folders in .meteor/local/types
-export class Writer {
+module.exports = class Writer {
   constructor(appPath) {
     this.appPath = appPath;
     this.typesPath = path.resolve(appPath, '.meteor/local/types');
@@ -77,7 +79,9 @@ export class Writer {
 
   writeToDisk() {
     log('writing to disk');
-    for (const [name, { packagePath }] of this.packages.entries()) {
+    for (const entry of this.packages.entries()) {
+      let name = entry[0];
+      let packagePath = entry[1].packagePath;
       let existing = this.existingPackages.get(name);
 
       let nodeModulesPath = this.findNodeModulesPath(packagePath);
@@ -141,7 +145,9 @@ export class Writer {
 
     let added = new Set();
 
-    for (const [name, { typesPath } ] of this.packages.entries()) {
+    for (const entry of this.packages.entries()) {
+      let name = entry[0];
+      let typesPath = entry[1].typesPath;
       added.add(name);
       let standardName = name.replace('_', ':');
       // When typescript resolves the file, it assumes the path doesn't

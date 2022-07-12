@@ -1,6 +1,8 @@
-import path from 'path';
-import fs from 'fs';
-import { spawnSync } from 'child_process';
+'use strict';
+
+const path = require('path');
+const fs = require('fs');
+const spawnSync = require('child_process').spawnSync;
 
 // During publishing packages, this handles:
 //
@@ -39,15 +41,20 @@ const PackageSource = toolsRequire('isobuild/package-source');
 const originalFindSources = PackageSource.prototype._findSources;
 
 PackageSource.prototype._findSources = function (options) {
+  let sourceProcessorSet = options.sourceProcessorSet;
+
   if (
-    !prepared &&
     isPublish &&
+    !prepared &&
     this.sourceRoot === packagePath &&
+    this.name !== 'zodern:types' &&
+    sourceProcessorSet  && 
 
     // If _findSources is called for a linter, then _allowConflicts will be true
     // and we can't call getByFilename
-    !options?.sourceProcessorSet._allowConflicts &&
-    options?.sourceProcessorSet?.getByFilename('package-types.json')
+    sourceProcessorSet._allowConflicts &&
+    sourceProcessorSet.getByFilename &&
+    sourceProcessorSet.getByFilename('package-types.json')
   ) {
     preparePackageForPublish(this.sourceRoot);
     prepared = true;
@@ -131,13 +138,13 @@ function preparePackageForPublish(packageDir) {
 
   process.on('exit', () => {
     console.log('[zodern:types] => Re-installing package\'s dev dependencies');
+    const env = JSON.parse(JSON.stringify(process.env));
+    env.NODE_ENV = 'development';
+
     spawnSync('npm', ['install'], {
       cwd: packageDir,
       stdio: 'inherit',
-      env: {
-        ...process.env,
-        NODE_ENV: 'development'
-      }
+      env: env
     });
   });
 }

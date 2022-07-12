@@ -1,5 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
 
 // TODO: add support for running Meteor from checkout
 let meteorParentDir = process.platform === 'win32' ?
@@ -8,7 +10,7 @@ let meteorParentDir = process.platform === 'win32' ?
 
 let catalogPath = path.join(meteorParentDir, '.meteor', 'packages');
 
-export function loadPackages(appPath) {
+module.exports = function loadPackages(appPath) {
   var contents;
   try {
     contents = fs.readFileSync(path.resolve(appPath, '.meteor/versions'), 'utf-8');
@@ -36,15 +38,12 @@ export function loadPackages(appPath) {
     if (packageVersion.package in packages)
       return;
 
-    var {
-      packagePath,
-      remote
-    } = findPackagePath(appPath, packageVersion.package, packageVersion.version);
+    var result = findPackagePath(appPath, packageVersion.package, packageVersion.version);
     packages[packageVersion.package] = {
-      remote,
+      remote: result.remote,
       version: packageVersion.version,
-      path: packagePath,
-      isopack: readIsopack(packagePath)
+      path: result.packagePath,
+      isopack: readIsopack(result.packagePath)
     };
   });
 

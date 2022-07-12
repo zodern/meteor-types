@@ -1,9 +1,16 @@
+'use strict';
+
 let enabled = process.env.DEBUG_ZODERN_TYPES === 'true';
 
-export default function log(...args) {
+module.exports = function log() {
   if (!enabled) {
     return;
   }
 
-  console.log('[zodern:types]', ...args);
+  let args = Array.from(arguments);
+
+  console.log.apply(
+    console,
+    ['[zodern:types]'].concat(args)
+  );
 }

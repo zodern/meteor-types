@@ -1,22 +1,23 @@
-import { loadPackages } from './isopacks.js';
-import { findTypesEntry } from './types-entry.js';
-import { Writer } from './writer.js';
+'use strict'
+var loadPackages = require('./isopacks.js');
+var findTypesEntry = require('./types-entry.js');
+var Writer = require('./writer.js');
 
-let appPath = process.cwd();
-let writer = new Writer(appPath);
+var appPath = process.cwd();
+var writer = new Writer(appPath);
 
-let setupFinished = false;
+var setupFinished = false;
 
 Plugin.registerLinter({
   // TODO: Meteor seems to be unable to start if the app has a main module 
   // with a different file extension than listed here??
   // TODO: reduce the number of extensions to make linting faster
   extensions: ['ts', 'js', 'tsx', 'jsx'],
-}, () => new MyLinter);
+}, () => new Linter);
 
-class MyLinter {
+class Linter {
   processFilesForPackage(files) {
-    let isApp = files[0].getPackageName() === null;
+    var isApp = files[0].getPackageName() === null;
 
     if (!isApp) {
       return;
@@ -27,10 +28,15 @@ class MyLinter {
       setupFinished = true;
     }
 
-    let packages = loadPackages(appPath);
+    var packages = loadPackages(appPath);
 
-    for(const [name, { path: packagePath, isopack, remote }] of Object.entries(packages)) {
-      let typesEntry = findTypesEntry(packagePath, isopack, remote);
+    for(var entry of Object.entries(packages)) {
+      var name = entry[0];
+      var packagePath = entry[1].path;
+      var isopack = entry[1].isopack;
+      var remote = entry[1].remote;
+
+      var typesEntry = findTypesEntry(packagePath, isopack, remote);
 
       if (typesEntry) {
         writer.addPackage(

@@ -1,13 +1,14 @@
-import path from 'path';
-import fs from 'fs';
-import log from './log';
+'use strict';
 
-export function findTypesEntry(packagePath, isopack, remote) {
-  const {
-    mainModules,
-    definitionFiles,
-    packageTypesConfigs
-  } = analyzeResources(isopack, remote);
+const path = require('path');
+const fs = require('fs');
+const log = require('./log.js');
+
+module.exports = function findTypesEntry(packagePath, isopack, remote) {
+  const result = analyzeResources(isopack, remote);
+  const mainModules = result.mainModules;
+  const definitionFiles = result.definitionFiles;
+  const packageTypesConfigs = result.packageTypesConfigs;
 
   log('examining', packagePath);
 
@@ -65,7 +66,7 @@ export function findTypesEntry(packagePath, isopack, remote) {
       )
     }
     // Check if definition file for the main module
-    for (const [, resource] of definitionFiles) {
+    for (const resource of definitionFiles.values()) {
       if (definitionNames.includes(resource.path)) {
         log('found matching definitions', resource);
         log('can use main module definition', packagePath);

@@ -1,6 +1,7 @@
 Package.describe({
-  summary: "Type definitions for Meteor packages",
   name: "zodern:types",
+  summary: "Type definitions for Meteor packages",
+  documentation: "./README.md",
   version: '1.0.0'
 });
 
@@ -8,7 +9,7 @@ Package.registerBuildPlugin({
   name: 'types',
   sources: [ 'types.js', 'publish-packages.js' ],
   use: [
-    'ecmascript'
+    'modules'
   ]
 })
 
