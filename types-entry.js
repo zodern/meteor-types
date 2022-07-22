@@ -117,7 +117,6 @@ function analyzeResources(isopack, remote) {
     definitionFiles,
     // Sort in order of priority
     // .types/package-types.json overrides package-types.json
-    // TODO: verify this works
     packageTypesConfigs: packageTypesConfigs.filter(c => c)
   };
 }
