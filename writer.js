@@ -150,7 +150,8 @@ module.exports = class Writer {
       let finalTypesPath = typesPath.replace('.ts', '');
       content += `
 declare module 'meteor/${standardName}' {
-  export * from 'package-types/${name}/package/${finalTypesPath}'
+  import exports = require('package-types/${name}/package/${finalTypesPath}');
+  export = exports;
 }
 `;
     }
