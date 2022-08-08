@@ -3,6 +3,8 @@ var loadPackages = require('./isopacks.js');
 var findTypesEntry = require('./types-entry.js');
 var Writer = require('./writer.js');
 const ProjectContext = require('./tools-imports.js').ProjectContext;
+const path = require('path');
+const fs = require('fs');
 
 var appPath = process.cwd();
 var writer = new Writer(appPath);
@@ -18,11 +20,29 @@ ProjectContext.prototype.getProjectLocalDirectory = function () {
   return oldGetProjectLocalDirectory.apply(this, arguments);
 };
 
+const isLinting = process.argv.includes('lint');
+
+const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+let filenames = [ 'tsconfig.json' ];
+
+// Meteor has a bug that requires linters to lint any main modules
+try {
+  let content = JSON.parse(
+    fs.readFileSync(packageJsonPath, 'utf-8')
+  );
+
+  if (content.meteor && content.meteor.mainModule) {
+    Object.keys(content.meteor.mainModule).forEach(key => {
+      let modulePath = content.meteor.mainModule[key];
+      let fileName = path.basename(modulePath);
+      filenames.push(fileName);
+    });
+  }
+} catch (e) {
+}
+
 Plugin.registerLinter({
-  // TODO: Meteor seems to be unable to start if the app has a main module 
-  // with a different file extension than listed here??
-  // TODO: reduce the number of extensions to make linting faster
-  extensions: ['ts', 'js', 'tsx', 'jsx'],
+  filenames: filenames
 }, () => new Linter());
 
 class Linter {
