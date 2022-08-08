@@ -84,5 +84,12 @@ class Linter {
     }
 
     writer.writeToDisk();
+
+    if (isLinting) {
+      console.log('');
+      console.log('[zodern:types] Updated types');
+      console.log('[zodern:types] Exiting "meteor lint" early');
+      process.exit(0);
+    }
   }
 }
