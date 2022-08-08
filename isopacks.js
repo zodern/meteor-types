@@ -44,7 +44,7 @@ module.exports = function loadPackages(appPath, catalog) {
       remote: result.remote,
       version: packageVersion.version,
       path: result.packagePath,
-      isopack: readIsopack(result.packagePath)
+      isopack: readIsopack(result.packagePath, result.remote)
     };
   });
 
@@ -74,7 +74,14 @@ function exists(path) {
   }
 }
 
-function readIsopack(packagePath) {
+// Remote isopacks are immutable, so we only need to read them once
+const isopackCache = Object.create(null);
+
+function readIsopack(packagePath, remote) {
+  if (remote && packagePath in isopackCache) {
+    return isopackCache[packagePath];
+  }
+
   let content = fs.readFileSync(packagePath + '/isopack.json', 'utf-8');
   let config = JSON.parse(content)['isopack-2'];
 
@@ -86,12 +93,18 @@ function readIsopack(packagePath) {
     return JSON.parse(fs.readFileSync(path.resolve(packagePath, build.path), 'utf-8'));
   });
 
+  if (remote) {
+    isopackCache[packagePath] = config;
+  }
+
   return config;
 }
 
+let packagePathCache = Object.create(null);
+
 function findPackagePath(appPath, name, version, catalog) {
   let checkLocal = true;
-  
+
   if (catalog) {
     let entry = catalog.getVersion(name, version);
     log('Catalog result:', name, version, `entry: ${!!entry}`, `published: ${entry && entry.published}`);
@@ -103,10 +116,18 @@ function findPackagePath(appPath, name, version, catalog) {
     }
   }
 
+  let cacheKey = [name, version, checkLocal].join('___');
+
+  if (cacheKey in packagePathCache) {
+    return packagePathCache[cacheKey];
+  }
+
   // Check if local package
   let localPath = path.resolve(appPath, '.meteor/local/isopacks', name.replace(':', '_'));
   if (checkLocal && exists(localPath)) {
-    return { packagePath: localPath, remote: false };
+    let result = { packagePath: localPath, remote: false };
+    packagePathCache[cacheKey] = result;
+    return result;
   }
 
   let remotePath = path.join(
@@ -116,7 +137,9 @@ function findPackagePath(appPath, name, version, catalog) {
   );
 
   if (exists(remotePath)) {
-    return { packagePath: remotePath, remote: true };
+    let result = { packagePath: remotePath, remote: true };
+    packagePathCache[cacheKey] = result;
+    return result;
   }
 
   throw new Error(`Unable to find package: ${name}@${version}`);
