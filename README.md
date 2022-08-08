@@ -15,11 +15,12 @@ To get started:
 meteor add zodern:types
 ```
 
-2) Configure typescript to find the types from packages. In your `tsconfig.json` file, add an entry to the `compilerOptions.paths` option:
+2) Configure typescript to find the types from packages. In your `tsconfig.json` file, add an entry to the `compilerOptions.paths` option and enable the `preserveSymlinks` option:
 
 ```json
 {
   "compilerOptions": {
+    "preserveSymlinks": true,
     "paths": {
       "meteor/*": [
         "node_modules/@types/meteor/*",
@@ -32,6 +33,8 @@ meteor add zodern:types
 
 `zodern:types` stores the type definitions from packages in your app's `.meteor/local/types` folder.
 If your tsconfig has `exclude` configured, make sure the exclude rules do not exclude `.meteor/local/types`.
+
+The `preserveSymlinks` option is needed so the type definitions for Meteor packages can use types from npm packages. 
 
 3) Generate types
 
