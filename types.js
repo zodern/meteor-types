@@ -34,8 +34,9 @@ class Linter {
     }
 
     if (!catalog) {
-      console.warn('Linter ran before we had access to package catalog');
-      console.warn('Please create a GitHub issue for zodern:types');
+      // When using the published version of zodern:types
+      // the catalog will never be available during the initial build
+      // since this build plugin is loaded too late
     }
 
     if (!setupFinished) {
