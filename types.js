@@ -35,7 +35,10 @@ try {
     Object.keys(content.meteor.mainModule).forEach(key => {
       let modulePath = content.meteor.mainModule[key];
       let fileName = path.basename(modulePath);
-      filenames.push(fileName);
+
+      if (filenames.indexOf(fileName) === -1) {
+        filenames.push(fileName);
+      }
     });
   }
 } catch (e) {
