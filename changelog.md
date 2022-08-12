@@ -1,3 +1,7 @@
+## 1.0.9 Aug 12, 2022
+
+- Partial workaround for bug in Meteor that causes it to crash with `Error: conflicts in compiler?` 
+
 ## 1.0.8 Aug 8, 2022
 
 - Force `meteor lint` to exit immediately after the types are updated to avoid the bugs with `meteor lint`
