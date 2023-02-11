@@ -3,6 +3,7 @@ var loadPackages = require('./isopacks.js');
 var findTypesEntry = require('./types-entry.js');
 var Writer = require('./writer.js');
 const ProjectContext = require('./tools-imports.js').ProjectContext;
+const tropohouse = require('./tools-imports.js').tropohouse;
 const path = require('path');
 const fs = require('fs');
 
@@ -19,6 +20,8 @@ ProjectContext.prototype.getProjectLocalDirectory = function () {
 
   return oldGetProjectLocalDirectory.apply(this, arguments);
 };
+
+const remoteCatalogRoot = tropohouse.root;
 
 const isLinting = process.argv.includes('lint');
 
@@ -67,7 +70,7 @@ class Linter {
       setupFinished = true;
     }
 
-    var packages = loadPackages(appPath, catalog);
+    var packages = loadPackages(appPath, catalog, remoteCatalogRoot);
 
     for(var entry of Object.entries(packages)) {
       var name = entry[0];
