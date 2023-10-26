@@ -45,7 +45,7 @@ module.exports = function findTypesEntry(packagePath, isopack, remote) {
 
       // TODO: warn if published package, and file is a ts file instead of d.ts
 
-      return relative;
+      return relative.split(path.sep).join(path.posix.sep);
     } else {
       log('not exists', config.typesEntry);
     }
