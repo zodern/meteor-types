@@ -1,3 +1,7 @@
+## 1.0.10 October 26, 2023
+
+- Fix using `typesEntry` on Windows
+
 ## 1.0.9 Aug 12, 2022
 
 - Partial workaround for bug in Meteor that causes it to crash with `Error: conflicts in compiler?` 
