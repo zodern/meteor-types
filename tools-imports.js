@@ -8,5 +8,6 @@ const toolsRequire = function (filePath) {
 
 module.exports = {
   PackageSource: toolsRequire('isobuild/package-source'),
-  ProjectContext: toolsRequire('./project-context').ProjectContext
+  ProjectContext: toolsRequire('./project-context').ProjectContext,
+  tropohouse: toolsRequire('./tropohouse').default,
 }

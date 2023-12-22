@@ -4,14 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const log = require('./log');
 
-// TODO: add support for running Meteor from checkout
-let meteorParentDir = process.platform === 'win32' ?
-  process.env.LOCALAPPDATA :
-  process.env.HOME;
-
-let remoteCatalogPath = path.join(meteorParentDir, '.meteor', 'packages');
-
-module.exports = function loadPackages(appPath, catalog) {
+module.exports = function loadPackages(appPath, catalog, remoteCatalogRoot) {
   var contents;
   try {
     contents = fs.readFileSync(path.resolve(appPath, '.meteor/versions'), 'utf-8');
@@ -39,7 +32,7 @@ module.exports = function loadPackages(appPath, catalog) {
     if (packageVersion.package in packages)
       return;
 
-    var result = findPackagePath(appPath, packageVersion.package, packageVersion.version, catalog);
+    var result = findPackagePath(appPath, packageVersion.package, packageVersion.version, catalog, remoteCatalogRoot);
     packages[packageVersion.package] = {
       remote: result.remote,
       version: packageVersion.version,
@@ -102,7 +95,7 @@ function readIsopack(packagePath, remote) {
 
 let packagePathCache = Object.create(null);
 
-function findPackagePath(appPath, name, version, catalog) {
+function findPackagePath(appPath, name, version, catalog, remoteCatalogRoot) {
   let checkLocal = true;
 
   if (catalog) {
@@ -131,7 +124,8 @@ function findPackagePath(appPath, name, version, catalog) {
   }
 
   let remotePath = path.join(
-    remoteCatalogPath,
+    remoteCatalogRoot,
+    'packages',
     name.replace(':', '_'),
     version
   );
