@@ -1,4 +1,8 @@
-## 1.0.10 October 26, 2023
+## 1.0.11 Dec 22, 2023
+
+- Support running Meteor from checkout
+
+## 1.0.10 Oct 26, 2023
 
 - Fix using `typesEntry` on Windows
 
