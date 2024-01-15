@@ -21,7 +21,10 @@ ProjectContext.prototype.getProjectLocalDirectory = function () {
   return oldGetProjectLocalDirectory.apply(this, arguments);
 };
 
-const remoteCatalogRoot = tropohouse.root;
+let remoteCatalogRoot = tropohouse.root;
+if (process.platform == "win32") {
+  remoteCatalogRoot = remoteCatalogRoot.replace(/^\/(\w)\//, "$1:\\").replace(/\//g,'\\');  
+}
 
 const isLinting = process.argv.includes('lint');
 
