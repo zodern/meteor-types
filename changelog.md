@@ -1,3 +1,7 @@
+## 1.0.12 March 20, 2024
+
+- Fix support for Windows
+
 ## 1.0.11 Dec 22, 2023
 
 - Support running Meteor from checkout
