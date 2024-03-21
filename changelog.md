@@ -1,3 +1,7 @@
+## 1.0.13 March 21, 2024
+
+- Republished 1.0.12 to fix compatibility with old Meteor versions
+
 ## 1.0.12 March 20, 2024
 
 - Fix support for Windows
