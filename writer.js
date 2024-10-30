@@ -4,10 +4,17 @@ const fs = require('fs');
 const path = require('path');
 const log = require('./log.js');
 
+const shouldOverrideSymlinkTarget = process.env.ZODERN_TYPES_SYMLINK_REMOTE_CATALOG_ROOT && process.env.ZODERN_TYPES_SYMLINK_APP_PATH;
+const symlinkOverrides = {
+	remoteCatalogRoot: process.env.ZODERN_TYPES_SYMLINK_REMOTE_CATALOG_ROOT,
+	appPath: process.env.ZODERN_TYPES_SYMLINK_APP_PATH
+}
+
 // Manages the files and folders in .meteor/local/types
 module.exports = class Writer {
-  constructor(appPath) {
+  constructor(appPath, remoteCatalogRoot) {
     this.appPath = appPath;
+		this.remoteCatalogRoot = remoteCatalogRoot;
     this.typesPath = path.resolve(appPath, '.meteor/local/types');
     this.npmPackagePath = path.resolve(this.typesPath, 'node_modules/package-types');
 
@@ -77,6 +84,22 @@ module.exports = class Writer {
     return name.replace(':', '_');
   }
 
+	getSymlinkTarget(path) {
+		// if there are no variable to override symlink target path
+		// then return it as is
+		if (!shouldOverrideSymlinkTarget) return path;
+
+		// if zodern:types is running in a different enviornment from the 
+		// development environment, then symlinks won't work properly
+		// we can use the following environment variables to override the
+		// symlink target path
+		const isRemote = path.includes(this.remoteCatalogRoot);
+		const pathToReplace	= isRemote ? this.remoteCatalogRoot : this.appPath;
+		const reaplacementPath = isRemote ? symlinkOverrides.remoteCatalogRoot : symlinkOverrides.appPath;
+
+		return path.replace(pathToReplace, reaplacementPath);
+	}
+
   writeToDisk() {
     log('writing to disk');
     for (const entry of this.packages.entries()) {
@@ -102,13 +125,18 @@ module.exports = class Writer {
       log('writing', name);
       let packageTypesPath = path.resolve(this.npmPackagePath, name);
       this.mkdirIfMIssing(packageTypesPath);
+
+      // generate symlinks
+			const symlinkNodeModulesTarget = this.getSymlinkTarget(nodeModulesPath);
       fs.symlinkSync(
-        nodeModulesPath,
+        symlinkNodeModulesTarget,
         path.resolve(packageTypesPath, 'node_modules'),
         'junction'
       );
+
+			const symlinkPackageTarget = this.getSymlinkTarget(packagePath); 
       fs.symlinkSync(
-        packagePath,
+        symlinkPackageTarget,
         path.resolve(packageTypesPath, 'package'),
         'junction'
       );

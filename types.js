@@ -6,9 +6,15 @@ const ProjectContext = require('./tools-imports.js').ProjectContext;
 const tropohouse = require('./tools-imports.js').tropohouse;
 const path = require('path');
 const fs = require('fs');
+const log = require('./log.js');
 
 var appPath = process.cwd();
-var writer = new Writer(appPath);
+const remoteCatalogRoot = (
+	process.platform == "win32"
+) ? 
+	Plugin.convertToOSPath( tropohouse.root ) 
+: tropohouse.root;
+var writer = new Writer(appPath, remoteCatalogRoot);
 
 var catalog;
 var setupFinished = false;
@@ -21,11 +27,6 @@ ProjectContext.prototype.getProjectLocalDirectory = function () {
   return oldGetProjectLocalDirectory.apply(this, arguments);
 };
 
-let remoteCatalogRoot = (
-    process.platform == "win32"
-  ) ? 
-    Plugin.convertToOSPath( tropohouse.root ) 
-  : tropohouse.root;
 
 const isLinting = process.argv.includes('lint');
 
@@ -73,6 +74,11 @@ class Linter {
       writer.setup();
       setupFinished = true;
     }
+
+		log('paths',{
+			appPath,
+			remoteCatalogRoot
+		})
 
     var packages = loadPackages(appPath, catalog, remoteCatalogRoot);
 
